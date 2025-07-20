@@ -22,9 +22,9 @@ export const appRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       await inngest.send({
-        name: "test/hello.world",
+        name: "vibe/build.app",
         data: {
-          name: input.text,
+          text: input.text,
         },
       });
     }),
