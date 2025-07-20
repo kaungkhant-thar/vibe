@@ -1,7 +1,8 @@
-import { OpenAi } from "inngest";
 import { inngest } from "./client";
+import { Sandbox } from "e2b";
 
 import { createAgent, openai } from "@inngest/agent-kit";
+import { getSandbox } from "./utils";
 
 export const helloWorld = inngest.createFunction(
   {
@@ -20,6 +21,10 @@ export const buildApp = inngest.createFunction(
   { id: "build-app" },
   { event: "vibe/build.app" },
   async ({ event, step }) => {
+    const sandboxId = await step.run("get-sandbox-id", async () => {
+      const sandbox = await Sandbox.create("vibe-template");
+      return sandbox.sandboxId;
+    });
     const codeWriterAgent = createAgent({
       name: "Code writer",
       system:
@@ -31,6 +36,11 @@ export const buildApp = inngest.createFunction(
       `Write the following code in Next.js React: ${event.data.text}`
     );
 
-    return output;
+    const sandboxUrl = await step.run("get-sandbox-url", async () => {
+      const sandbox = await getSandbox(sandboxId);
+      const host = sandbox.getHost(3000);
+      return `https://${host}`;
+    });
+    return { output, sandboxUrl };
   }
 );
