@@ -18,7 +18,7 @@ const TreeNode = ({
   selected: string | null;
   onSelect: (path: string) => void;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const isSelected = selected === path;
 
   if (node.type === "file") {

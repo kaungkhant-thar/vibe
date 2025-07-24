@@ -1,7 +1,7 @@
-import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Prisma } from "@/generated/prisma";
 import { fragmentStore } from "@/modules/projects/state";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight } from "lucide-react";
 
 type MessageWithFragment = Prisma.MessageGetPayload<{
   include: { fragment: true };

@@ -4,6 +4,7 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
 import MessageCard from "./message-card";
+import MessageForm from "./message-form";
 
 type Props = {
   projectId: string;
@@ -27,9 +28,11 @@ const MessagesContainer = ({ projectId }: Props) => {
           {messages.map((message) => (
             <MessageCard key={message.id} message={message} />
           ))}
+          {lastMessage && lastMessage.role === "USER" && "AI is thinking"}
         </div>
-
-        {lastMessage && lastMessage.role === "USER" && "AI is thinking"}
+      </div>
+      <div className="mt-auto">
+        <MessageForm projectId={projectId} />
       </div>
     </div>
   );

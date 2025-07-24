@@ -22,12 +22,11 @@ export const CodeViewer = ({ filePath, code }: Props) => {
   }, [code]);
 
   const lang = getLanguageExtension(filePath);
-  console.log({ lang });
 
   return (
-    <div className="flex-1 p-4 overflow-auto">
+    <div className="flex-1 h-full overflow-y-auto p-2">
       <h2 className="text-sm font-mono text-zinc-400 mb-2">{filePath}</h2>
-      <pre className="p-2 bg-transparent border-none rounded-none m-0 text-xs">
+      <pre className=" bg-transparent border-none rounded-none m-0 text-xs">
         <code className={`language-${lang}`}>{code}</code>
       </pre>
     </div>

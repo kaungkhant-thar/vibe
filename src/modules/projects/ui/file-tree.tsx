@@ -59,8 +59,8 @@ export const FileTree = ({ files }: Props) => {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="min-w-64 h-full bg-zinc-100 border-r overflow-y-auto p-3 text-sm">
+    <div className="flex ">
+      <div className="min-w-64  bg-zinc-100 border-r overflow-y-auto p-3 text-sm">
         {Object.entries(tree).map(([key, node]) => (
           <TreeNode
             key={key}
@@ -72,9 +72,7 @@ export const FileTree = ({ files }: Props) => {
         ))}
       </div>
 
-      <div>
-        {files && <CodeViewer code={files[selected]} filePath={selected} />}
-      </div>
+      {files && <CodeViewer code={files[selected]} filePath={selected} />}
     </div>
   );
 };
