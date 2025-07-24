@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+//vibe coding schema
+
+model Project {
+  id     String @id @default(uuid())
+  name String
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum MessageType {
+  RESULT
+  ERROR
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+model Message{
+  id String @id @default(uuid())
+  content String
+  
+  type MessageType
+  role MessageRole
+  projectId String
+  project Project @relation(fields: [projectId],  references: [id], onDelete: Cascade)
+
+  fragment Fragment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Fragment {
+  id String @id @default(uuid())
+  name String?
+  files Json
+  sandboxUrl String
+  title String
+  messageId String @unique
+  message Message @relation(fields:[messageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
