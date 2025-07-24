@@ -1,33 +1,10 @@
-import { z } from "zod";
-import { baseProcedure, createTRPCRouter } from "../init";
-import { inngest } from "@/ingest/client";
-export const appRouter = createTRPCRouter({
-  hello: baseProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query((opts) => {
-      return {
-        greeting: `hello ${opts.input.text}`,
-      };
-    }),
+import { createTRPCRouter } from "../init";
 
-  buildApp: baseProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      await inngest.send({
-        name: "vibe/build.app",
-        data: {
-          text: input.text,
-        },
-      });
-    }),
+import { projectsRouter } from "@/modules/projects/procedures";
+import { messagesRouter } from "@/modules/messages/procedures";
+export const appRouter = createTRPCRouter({
+  projects: projectsRouter,
+  messages: messagesRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

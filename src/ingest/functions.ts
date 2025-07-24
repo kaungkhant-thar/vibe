@@ -14,6 +14,7 @@ import {
 } from "./utils";
 import { PROMPT } from "@/lib/promot";
 import { z } from "zod";
+import prisma from "@/lib/prisma";
 
 export const buildApp = inngest.createFunction(
   { id: "build-app" },
@@ -173,6 +174,25 @@ export const buildApp = inngest.createFunction(
       const host = sandbox.getHost(3000);
       return `https://${host}`;
     });
+
+    await step.run("save-message", async () => {
+      await prisma.message.create({
+        data: {
+          content: result.state.data.summary,
+          role: "ASSISTANT",
+          type: "RESULT",
+          projectId: event.data.projectId,
+          fragment: {
+            create: {
+              files: result.state.data.files,
+              sandboxUrl: sandboxUrl,
+              title: "Fragment",
+            },
+          },
+        },
+      });
+    });
+
     return {
       url: sandboxUrl,
       title: "Fragment",
