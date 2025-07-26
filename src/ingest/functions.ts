@@ -4,8 +4,10 @@ import { Sandbox } from "e2b";
 import {
   createAgent,
   createNetwork,
+  createState,
   createTool,
   openai,
+  type Message,
 } from "@inngest/agent-kit";
 import {
   getSandbox,
@@ -16,6 +18,11 @@ import { PROMPT } from "@/lib/promot";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 
+type AgentState = {
+  summary: string;
+  files: Record<string, string>;
+};
+
 export const buildApp = inngest.createFunction(
   { id: "build-app" },
   { event: "vibe/build.app" },
@@ -24,10 +31,40 @@ export const buildApp = inngest.createFunction(
       const sandbox = await Sandbox.create("vibe-template");
       return sandbox.sandboxId;
     });
+
+    const prevMessages = await step.run("get-prev-messages", async () => {
+      const messages = await prisma.message.findMany({
+        where: {
+          projectId: event.data.projectId,
+          content: {
+            not: event.data.text,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 5,
+      });
+
+      return messages.map((message) => ({
+        type: "text",
+        role: message.role === "ASSISTANT" ? "assistant" : "user",
+        content: message.content,
+      })) as Message[];
+    });
+
+    const state = createState<AgentState>(
+      {
+        summary: "",
+        files: {},
+      },
+      {
+        messages: prevMessages,
+      }
+    );
     const codeWriterAgent = createAgent({
       name: "Code writer",
       system: PROMPT,
-
       model: openai({
         model: "gpt-4.1",
         defaultParameters: {
@@ -157,6 +194,7 @@ export const buildApp = inngest.createFunction(
       name: "coding-agent-network",
       agents: [codeWriterAgent],
       maxIter: 5,
+      defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
 
@@ -167,7 +205,9 @@ export const buildApp = inngest.createFunction(
         return codeWriterAgent;
       },
     });
-    const result = await network.run(event.data.text);
+    const result = await network.run(event.data.text, {
+      state,
+    });
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
