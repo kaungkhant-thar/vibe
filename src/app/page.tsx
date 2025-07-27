@@ -7,6 +7,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTRPC } from "@/trpc/client";
+import {
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  UserButton,
+} from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -38,17 +46,20 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="font-bold text-xl">VibeCode</div>
-          <nav className="hidden md:flex space-x-6">
-            <a href="#">Community</a>
-            <a href="#">Pricing</a>
-            <a href="#">Enterprise</a>
-            <a href="#">Learn</a>
-            <a href="#">Launched</a>
-          </nav>
+          <Link href="/" className="font-bold text-xl text-primary">
+            VibeCode
+          </Link>
+
           <div className="flex items-center space-x-4">
-            <Button variant="ghost">Get free credits</Button>
-            <Button>My VibeCode</Button>
+            <SignedOut>
+              <SignInButton />
+              <SignUpButton>
+                <Button>Sign Up</Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
         </div>
       </header>
@@ -71,20 +82,12 @@ export default function Home() {
               className="w-full rounded-lg border-2 border-gray-300 p-6 text-lg"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="a blog about sustainable fashion"
+              placeholder="a blog about how to succeed"
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
 
           <div className="flex justify-between items-center">
-            {/* <div className="flex space-x-2">
-              <Button variant="outline" className="rounded-full">
-                Public
-              </Button>
-              <Button variant="outline" className="rounded-full">
-                Suppbase
-              </Button>
-            </div> */}
             <Button onClick={handleSubmit} disabled={createProject.isPending}>
               {createProject.isPending ? "Creating..." : "Create"}
             </Button>

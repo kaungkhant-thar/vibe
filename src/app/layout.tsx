@@ -1,8 +1,9 @@
+import { TRPCReactProvider } from "@/trpc/client";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vibe",
+  title: "VibeCode",
   description: "An ai vide coding application",
 };
 
@@ -29,10 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Toaster />
-        <TRPCReactProvider>
-          <main className=""> {children}</main>
-        </TRPCReactProvider>
+        <ClerkProvider>
+          <Toaster />
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

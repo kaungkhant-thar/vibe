@@ -14,7 +14,7 @@ type Props = {
 };
 const ProjectDetails = ({ projectId }: Props) => {
   return (
-    <div className="h-screen p-5">
+    <div className="h-screen">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
           defaultSize={35}
