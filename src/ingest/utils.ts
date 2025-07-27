@@ -1,5 +1,5 @@
 import Sandbox from "@e2b/code-interpreter";
-import { AgentResult, Message } from "@inngest/agent-kit";
+import { AgentResult, Message, TextMessage } from "@inngest/agent-kit";
 
 export async function getSandbox(sandboxId: string) {
   const sandbox = await Sandbox.connect(sandboxId);

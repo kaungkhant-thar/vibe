@@ -82,6 +82,11 @@ const MessageForm = ({ projectId }: Props) => {
                   placeholder="Ask vibe..."
                   className="min-h-[100px] resize-none"
                   {...field}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    !e.shiftKey &&
+                    form.handleSubmit(onSubmit)()
+                  }
                 />
               </FormControl>
               <FormMessage />

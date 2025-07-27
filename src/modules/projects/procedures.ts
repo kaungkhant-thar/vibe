@@ -1,11 +1,11 @@
 import prisma from "@/lib/prisma";
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 import { generateSlug } from "random-word-slugs";
 import { inngest } from "@/ingest/client";
 
 export const projectsRouter = createTRPCRouter({
-  getOne: baseProcedure
+  getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const project = await prisma.project.findUnique({
@@ -15,18 +15,19 @@ export const projectsRouter = createTRPCRouter({
       });
       return project;
     }),
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const response = await prisma.project.create({
         data: {
           name: generateSlug(2, {
             format: "kebab",
           }),
+          userId: ctx.auth.userId,
         },
       });
       await prisma.message.create({
