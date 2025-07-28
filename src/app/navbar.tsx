@@ -1,31 +1,34 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <header
-      className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        scrolled && "bg-white/30 backdrop-blur-md shadow-md"
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl ">
-          Vibe
+    <header className="border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <Link href="/" className="font-bold text-xl text-primary">
+          VibeCode
         </Link>
+
+        <div className="flex items-center space-x-4">
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton>
+              <Button>Sign Up</Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
       </div>
     </header>
   );
