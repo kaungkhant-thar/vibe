@@ -30,7 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider>
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: "oklch(0.7357 0.1641 34.7091)",
+            },
+          }}
+        >
           <Toaster />
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ClerkProvider>

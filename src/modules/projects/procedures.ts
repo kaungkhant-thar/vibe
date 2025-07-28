@@ -3,6 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 import { generateSlug } from "random-word-slugs";
 import { inngest } from "@/ingest/client";
+import { consumeCredit } from "@/lib/usage";
 
 export const projectsRouter = createTRPCRouter({
   getOne: protectedProcedure
@@ -22,6 +23,7 @@ export const projectsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await consumeCredit();
       const response = await prisma.project.create({
         data: {
           name: generateSlug(2, {
