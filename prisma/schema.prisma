@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,29 +8,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-//vibe coding schema
-
 model User {
-  id Int @id @default(autoincrement())
-  clerkId String @unique
-  email String @unique
-  name String?
+  id       Int       @id @default(autoincrement())
+  clerkId  String    @unique
+  email    String    @unique
+  name     String?
   projects Project[]
 }
 
 model Project {
-  id     String @id @default(uuid())
-  name String
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  messages  Message[]
+  user      User      @relation(fields: [userId], references: [clerkId])
+}
 
-  messages Message[]
+model Message {
+  id        String      @id @default(uuid())
+  content   String
+  type      MessageType
+  role      MessageRole
+  projectId String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  fragment  Fragment?
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Fragment {
+  id         String   @id @default(uuid())
+  files      Json
+  sandboxUrl String
+  title      String
+  messageId  String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String?
+  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
 
 
-  userId String
-  user      User     @relation(fields: [userId], references: [clerkId])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Usage {
+  key    String    @id
+  points Int
+  expire DateTime?
 }
 
 enum MessageType {
@@ -47,31 +65,4 @@ enum MessageType {
 enum MessageRole {
   USER
   ASSISTANT
-}
-model Message{
-  id String @id @default(uuid())
-  content String
-  
-  type MessageType
-  role MessageRole
-  projectId String
-  project Project @relation(fields: [projectId],  references: [id], onDelete: Cascade)
-
-  fragment Fragment?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Fragment {
-  id String @id @default(uuid())
-  name String?
-  files Json
-  sandboxUrl String
-  title String
-  messageId String @unique
-  message Message @relation(fields:[messageId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

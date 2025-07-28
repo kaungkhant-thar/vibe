@@ -1,5 +1,6 @@
 import { inngest } from "@/ingest/client";
 import prisma from "@/lib/prisma";
+import { consumeCredit } from "@/lib/usage";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 
@@ -31,6 +32,7 @@ export const messagesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      await consumeCredit();
       const message = await prisma.message.create({
         data: {
           content: input.content,

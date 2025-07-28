@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ArrowUp } from "lucide-react";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import Usage from "@/modules/usage/ui/usage";
 
 type Props = {
   projectId: string;
@@ -34,12 +35,15 @@ const MessageForm = ({ projectId }: Props) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
+  const { data: usage } = useQuery(trpc.usages.get.queryOptions());
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
   });
+
+  const showUsage = Boolean(usage);
 
   const createMessage = useMutation(
     trpc.messages.create.mutationOptions({
@@ -68,6 +72,12 @@ const MessageForm = ({ projectId }: Props) => {
 
   return (
     <Form {...form}>
+      {showUsage && (
+        <Usage
+          points={usage?.remainingPoints || 0}
+          nextCycleMilliseconds={usage?.msBeforeNext || 0}
+        />
+      )}
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 relative p-4 "
@@ -75,6 +85,7 @@ const MessageForm = ({ projectId }: Props) => {
         <FormField
           control={form.control}
           name="content"
+          disabled={usage?.remainingPoints === 0}
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -95,7 +106,10 @@ const MessageForm = ({ projectId }: Props) => {
         />
 
         <div className="absolute bottom-10 right-6">
-          <Button type="submit" disabled={createMessage.isPending}>
+          <Button
+            type="submit"
+            disabled={createMessage.isPending || usage?.remainingPoints === 0}
+          >
             {createMessage.isPending ? "Sending..." : <ArrowUp />}
           </Button>
         </div>
