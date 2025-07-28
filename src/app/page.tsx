@@ -1,20 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTRPC } from "@/trpc/client";
-import {
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  UserButton,
-} from "@clerk/nextjs";
-import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import Navbar from "./navbar";
 
 export default function Home() {
